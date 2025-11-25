@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - City Runner Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-container, .admin-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        h2 {
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        .status-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-label {
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .status-value {
+            color: #333;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .bank-details-display {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 2px solid #ffc107;
+        }
+        
+        .detail-row {
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #856404;
+        }
+        
+        .detail-value {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <h1>Admin Panel Login</h1>
+        <div class="alert alert-info">
+            <strong>Default Password:</strong> admin123<br>
+            (You can change this after logging in)
+        </div>
+        <div class="form-group">
+            <label for="loginPassword">Enter Password:</label>
+            <input type="password" id="loginPassword" placeholder="Enter admin password">
+        </div>
+        <button onclick="login()">Login</button>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminScreen" class="admin-container hidden">
+        <h1>City Runner - Admin Dashboard</h1>
+        
+        <div id="successMessage" class="alert alert-success hidden"></div>
+        
+        <!-- AdSense Status -->
+        <div class="status-card">
+            <h2>Google AdSense Status</h2>
+            <div class="status-item">
+                <span class="status-label">Account Status:</span>
+                <span class="status-value" id="adsenseStatus">Pending Approval</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Website:</span>
+                <span class="status-value">sarthakwebsite26012000-dot.github.io</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Email:</span>
+                <span class="status-value">sarthakwebsite26012000@gmail.com</span>
+            </div>
+        </div>
+
+        <!-- Bank Details Form -->
+        <h2>Bank Account Details</h2>
+        <div class="alert alert-info">
+            <strong>Important:</strong> These details are stored locally in your browser. AdSense payments will be sent via Electronic Funds Transfer (EFT) to the account you provide in your AdSense dashboard.
+        </div>
+        
+        <div class="form-group">
+            <label for="accountHolder">Account Holder Name:</label>
+            <input type="text" id="accountHolder" placeholder="Enter full name as per bank account">
+        </div>
+        
+        <div class="form-group">
+            <label for="bankName">Bank Name:</label>
+            <input type="text" id="bankName" placeholder="Enter your bank name">
+        </div>
+        
+        <div class="form-group">
+            <label for="accountNumber">Account Number:</label>
+            <input type="text" id="accountNumber" placeholder="Enter your account number">
+        </div>
+        
+        <div class="form-group">
+            <label for="ifscCode">IFSC Code:</label>
+            <input type="text" id="ifscCode" placeholder="Enter IFSC code">
+        </div>
+        
+        <div class="form-group">
+            <label for="adminEmail">Email for Notifications:</label>
+            <input type="email" id="adminEmail" placeholder="Enter email address">
+        </div>
+        
+        <button onclick="saveBankDetails()">Save Bank Details</button>
+        
+        <!-- Display Saved Details -->
+        <div id="savedDetails" class="bank-details-display hidden">
+            <h3 style="color: #856404; margin-bottom: 15px;">Saved Bank Details</h3>
+            <div class="detail-row">
+                <span class="detail-label">Account Holder:</span>
+                <span class="detail-value" id="displayHolder"></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Bank Name:</span>
+                <span class="detail-value" id="displayBank"></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Account Number:</span>
+                <span class="detail-value" id="displayAccount"></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">IFSC Code:</span>
+                <span class="detail-value" id="displayIFSC"></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Email:</span>
+                <span class="detail-value" id="displayEmail"></span>
+            </div>
+            <button class="btn-secondary" onclick="editDetails()" style="margin-top: 20px;">Edit Details</button>
+            <button class="btn-danger" onclick="deleteDetails()">Delete All Details</button>
+        </div>
+        
+        <button class="btn-secondary" onclick="logout()" style="margin-top: 30px;">Logout</button>
+    </div>
+
+    <script>
+        // Check if already logged in
+        window.onload = function() {
+            const isLoggedIn = sessionStorage.getItem('adminLoggedIn');
+            if (isLoggedIn === 'true') {
+                showAdmin();
+            }
+            loadBankDetails();
+        };
+
+        function login() {
+            const password = document.getElementById('loginPassword').value;
+            const storedPassword = localStorage.getItem('adminPassword') || 'admin123';
+            
+            if (password === storedPassword) {
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                showAdmin();
+            } else {
+                alert('Incorrect password!');
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('adminScreen').classList.add('hidden');
+            document.getElementById('loginPassword').value = '';
+        }
+
+        function showAdmin() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('adminScreen').classList.remove('hidden');
+        }
+
+        function saveBankDetails() {
+            const accountHolder = document.getElementById('accountHolder').value;
+            const bankName = document.getElementById('bankName').value;
+            const accountNumber = document.getElementById('accountNumber').value;
+            const ifscCode = document.getElementById('ifscCode').value;
+            const adminEmail = document.getElementById('adminEmail').value;
+
+            if (!accountHolder || !bankName || !accountNumber || !ifscCode || !adminEmail) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            const bankDetails = {
+                accountHolder,
+                bankName,
+                accountNumber,
+                ifscCode,
+                adminEmail,
+                savedAt: new Date().toISOString()
+            };
+
+            localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
+            
+            showSuccessMessage('Bank details saved successfully!');
+            loadBankDetails();
+        }
+
+        function loadBankDetails() {
+            const bankDetails = localStorage.getItem('bankDetails');
+            
+            if (bankDetails) {
+                const details = JSON.parse(bankDetails);
+                
+                document.getElementById('displayHolder').textContent = details.accountHolder;
+                document.getElementById('displayBank').textContent = details.bankName;
+                document.getElementById('displayAccount').textContent = maskAccount(details.accountNumber);
+                document.getElementById('displayIFSC').textContent = details.ifscCode;
+                document.getElementById('displayEmail').textContent = details.adminEmail;
+                
+                document.getElementById('savedDetails').classList.remove('hidden');
+            }
+        }
+
+        function maskAccount(accountNumber) {
+            if (accountNumber.length <= 4) return accountNumber;
+            return '*'.repeat(accountNumber.length - 4) + accountNumber.slice(-4);
+        }
+
+        function editDetails() {
+            const bankDetails = localStorage.getItem('bankDetails');
+            if (bankDetails) {
+                const details = JSON.parse(bankDetails);
+                
+                document.getElementById('accountHolder').value = details.accountHolder;
+                document.getElementById('bankName').value = details.bankName;
+                document.getElementById('accountNumber').value = details.accountNumber;
+                document.getElementById('ifscCode').value = details.ifscCode;
+                document.getElementById('adminEmail').value = details.adminEmail;
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function deleteDetails() {
+            if (confirm('Are you sure you want to delete all bank details? This action cannot be undone.')) {
+                localStorage.removeItem('bankDetails');
+                
+                document.getElementById('accountHolder').value = '';
+                document.getElementById('bankName').value = '';
+                document.getElementById('accountNumber').value = '';
+                document.getElementById('ifscCode').value = '';
+                document.getElementById('adminEmail').value = '';
+                
+                document.getElementById('savedDetails').classList.add('hidden');
+                showSuccessMessage('Bank details deleted successfully!');
+            }
+        }
+
+        function showSuccessMessage(message) {
+            const msgDiv = document.getElementById('successMessage');
+            msgDiv.textContent = message;
+            msgDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                msgDiv.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
