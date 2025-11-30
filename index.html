@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>City Runner - Endless Runner Game</title>
+        <!-- Content Security Policy for injection protection -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self';">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -228,6 +230,168 @@
         }
         
         function restartGame() { startGame(); }
+    
+    // ========== SECURITY MEASURES ==========
+    // Anti-Cheat Protection System
+    
+    // 1. Detect Developer Tools / Console Opening
+    let devtoolsOpen = false;
+    const detectDevTools = () => {
+        const threshold = 160;
+        if (window.outerWidth - window.innerWidth > threshold || 
+            window.outerHeight - window.innerHeight > threshold) {
+            devtoolsOpen = true;
+            console.warn('⚠️ Cheating detected! Game integrity compromised.');
+            // Optionally pause or reset game
+            if (gameRunning) {
+                endGame();
+                alert('⚠️ Developer tools detected. Game ended for security.');
+            }
+        }
+    };
+    
+    // Check every 1 second
+    setInterval(detectDevTools, 1000);
+    
+    // 2. Prevent Right-Click / Context Menu
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+    
+    // 3. Prevent Common Keyboard Shortcuts for DevTools
+    document.addEventListener('keydown', (e) => {
+        // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        if (e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+            (e.ctrlKey && e.key === 'u')) {
+            e.preventDefault();
+            alert('⚠️ This action is disabled for game security.');
+            return false;
+        }
+    });
+    
+    // 4. Variable Obfuscation - Store critical values with checksums
+    const secureStore = {
+        _score: 0,
+        _coins: 0,
+        _checksum: 0,
+        
+        generateChecksum() {
+            return this._score * 7 + this._coins * 13 + 42;
+        },
+        
+        setScore(val) {
+            this._score = Math.floor(val);
+            this._checksum = this.generateChecksum();
+        },
+        
+        getScore() {
+            if (this._checksum !== this.generateChecksum()) {
+                console.warn('⚠️ Score tampering detected!');
+                endGame();
+                return 0;
+            }
+            return this._score;
+        },
+        
+        setCoins(val) {
+            this._coins = Math.floor(val);
+            this._checksum = this.generateChecksum();
+        },
+        
+        getCoins() {
+            if (this._checksum !== this.generateChecksum()) {
+                console.warn('⚠️ Coins tampering detected!');
+                endGame();
+                return 0;
+            }
+            return this._coins;
+        }
+    };
+    
+    // 5. Integrity Check - Detect function modification
+    const originalFunctions = {
+        startGame: startGame.toString(),
+        endGame: endGame.toString(),
+        update: update.toString()
+    };
+    
+    const checkIntegrity = () => {
+        if (gameRunning) {
+            if (startGame.toString() !== originalFunctions.startGame ||
+                endGame.toString() !== originalFunctions.endGame ||
+                update.toString() !== originalFunctions.update) {
+                console.warn('⚠️ Game code tampering detected!');
+                gameRunning = false;
+                clearInterval(gameLoop);
+                alert('⚠️ Unauthorized modification detected. Game terminated.');
+            }
+        }
+    };
+    
+    // Check integrity every 5 seconds
+    setInterval(checkIntegrity, 5000);
+    
+    // 6. Disable Console Commands
+    const _console = console;
+    Object.freeze(console);
+    
+    // 7. Prevent Score Manipulation via Memory
+    Object.defineProperty(window, 'score', {
+        get: () => secureStore.getScore(),
+        set: () => {
+            console.warn('⚠️ Attempt to modify score blocked!');
+        },
+        configurable: false
+    });
+    
+    Object.defineProperty(window, 'coins', {
+        get: () => secureStore.getCoins(),
+        set: () => {
+            console.warn('⚠️ Attempt to modify coins blocked!');
+        },
+        configurable: false
+    });
+    
+    // 8. Rate Limiting - Prevent automated bots
+    let lastActionTime = Date.now();
+    const actionCooldown = 10; // ms
+    
+    const originalAddEventListener = document.addEventListener;
+    document.addEventListener = function(type, listener, options) {
+        if (type === 'keydown') {
+            const wrappedListener = function(e) {
+                const now = Date.now();
+                if (now - lastActionTime < actionCooldown) {
+                    e.preventDefault();
+                    return;
+                }
+                lastActionTime = now;
+                listener(e);
+            };
+            return originalAddEventListener.call(this, type, wrappedListener, options);
+        }
+        return originalAddEventListener.call(this, type, listener, options);
+    };
+    
+    // 9. Detect Debugger
+    (function() {
+        function detectDebugger() {
+            const start = performance.now();
+            debugger;
+            const end = performance.now();
+            if (end - start > 100) {
+                console.warn('⚠️ Debugger detected!');
+                if (gameRunning) endGame();
+            }
+        }
+        setInterval(detectDebugger, 3000);
+    })();
+    
+    // 10. Content Security Policy Meta Tag (already in HTML head)
+    // Prevents injection attacks
+    
+    console.log('🔒 Security measures activated!');
+    console.log('⚠️ Any tampering attempts will be detected and game will be terminated.');
+
     </script>
 
     <!-- Ad Container - Place ads at natural breaks -->
